@@ -1,6 +1,6 @@
 # Viola Kasir - Sistem Kasir Web
 
-Sistem kasir modern untuk restoran dan cafe yang dapat digunakan sebagai Progressive Web App (PWA) tanpa perlu server lokal seperti XAMPP.
+Sistem kasir modern untuk restoran dan cafe yang dapat digunakan sebagai Progressive Web App (PWA) tanpa perlu server lokal seperti XAMPP. Mendukung penyimpanan gambar di Cloudinary untuk sinkronisasi antar device.
 
 ## 🚀 Cara Menggunakan Tanpa XAMPP
 
@@ -37,18 +37,56 @@ Sistem kasir modern untuk restoran dan cafe yang dapat digunakan sebagai Progres
 
 ### Opsi 2: Install sebagai PWA di Mobile
 
-**Android:**
-1. Buka aplikasi di browser (Chrome)
-2. Tunggu prompt "Add to Home Screen"
-3. Klik "Add"
-4. Aplikasi akan muncul di home screen seperti native app
+#### Android (Chrome Browser)
 
-**iOS:**
-1. Buka aplikasi di browser (Safari)
-2. Tap tombol Share
-3. Pilih "Add to Home Screen"
-4. Tap "Add"
-5. Aplikasi akan muncul di home screen
+**Langkah 1: Buka Aplikasi di Chrome**
+1. Buka browser Chrome di Android
+2. Ketik URL aplikasi: `https://username.github.io/viola-kasir`
+3. Tunggu halaman terload sepenuhnya
+
+**Langkah 2: Tunggu Prompt Install**
+- Chrome akan otomatis menampilkan prompt "Add to Home Screen"
+- Biasanya muncul di bagian bawah layar
+- Prompt berisi: "Add Viola Kasir to Home Screen"
+
+**Langkah 3: Install PWA**
+- Klik tombol "Add" atau "Install"
+- Tunggu proses install selesai
+- Aplikasi akan muncul di home screen
+
+**Langkah 4: Buka dari Home Screen**
+- Aplikasi akan berjalan seperti native app
+- Full screen tanpa address bar
+- Icon akan muncul di app drawer
+
+**Jika Prompt Tidak Muncul:**
+1. Tap menu (tiga titik) di pojok kanan atas Chrome
+2. Pilih "Add to Home Screen" atau "Install App"
+3. Konfirmasi dengan tap "Add"
+4. Aplikasi akan terinstall
+
+#### iOS (Safari Browser)
+
+**Langkah 1: Buka Aplikasi di Safari**
+1. Buka browser Safari di iPhone/iPad
+2. Ketik URL aplikasi: `https://username.github.io/viola-kasir`
+3. Tunggu halaman terload sepenuhnya
+
+**Langkah 2: Tap Tombol Share**
+- Tap tombol Share (kotak dengan panah ke atas)
+- Biasanya di bagian bawah layar
+
+**Langkah 3: Pilih Add to Home Screen**
+- Scroll ke bawah menu
+- Tap "Add to Home Screen"
+
+**Langkah 4: Konfirmasi**
+- Tap "Add" di pojok kanan atas
+- Aplikasi akan muncul di home screen
+
+**Langkah 5: Buka dari Home Screen**
+- Tap icon aplikasi di home screen
+- Aplikasi akan berjalan seperti native app
 
 ### Opsi 3: Convert ke APK (Advanced)
 
@@ -97,6 +135,9 @@ cordova build android
 - ✅ Full screen mode
 - ✅ Auto-update
 - ✅ Data tersimpan di localStorage
+- ✅ Optimized untuk Android dan iOS
+- ✅ Portrait mode untuk mobile
+- ✅ Responsive design untuk berbagai ukuran layar
 
 ## 🌐 Hosting Gratis yang Direkomendasikan
 
@@ -165,9 +206,60 @@ Jika mengalami masalah:
 ## 🔐 Keamanan
 
 - Data tersimpan lokal di device user
-- Tidak ada koneksi ke server eksternal
+- Tidak ada koneksi ke server eksternal (kecuali Cloudinary untuk gambar)
 - Tidak perlu database server
 - 100% client-side application
+
+## ☁️ Setup Cloudinary untuk Gambar
+
+Untuk sinkronisasi gambar antar device, gunakan Cloudinary:
+
+### Langkah-langkah Setup:
+
+1. **Buat Akun Cloudinary**
+   - Buka https://cloudinary.com
+   - Sign up gratis
+   - Verifikasi email
+
+2. **Dapatkan Credentials**
+   - Masuk ke Dashboard
+   - Copy **Cloud Name** dari dashboard
+   - Copy **API Key** dari dashboard
+
+3. **Buat Upload Preset Unsigned**
+   - Masuk ke Settings → Upload
+   - Scroll ke "Upload presets"
+   - Klik "Add upload preset"
+   - Beri nama (misal: `viola-kasir`)
+   - Set "Signing mode" ke "Unsigned"
+   - Klik Save
+   - Copy nama preset yang dibuat
+
+4. **Update Konfigurasi di script.js**
+   ```javascript
+   this.cloudinaryConfig = {
+       cloudName: 'YOUR_CLOUD_NAME', // Ganti dengan cloud name Anda
+       uploadPreset: 'YOUR_UPLOAD_PRESET', // Ganti dengan upload preset unsigned
+       apiKey: 'YOUR_API_KEY' // Ganti dengan API key Anda
+   };
+   ```
+
+5. **Deploy ke GitHub**
+   - Push perubahan ke GitHub
+   - GitHub Pages akan otomatis update
+
+### Keuntungan Cloudinary:
+- ✅ Gambar tersimpan di cloud
+- ✅ Dapat diakses dari semua device
+- ✅ Auto-optimization dan CDN
+- ✅ Gratis tier cukup untuk penggunaan kasir
+- ✅ Fallback ke base64 jika gagal
+
+### Tanpa Cloudinary:
+Jika tidak ingin menggunakan Cloudinary, sistem akan otomatis menggunakan base64 encoding (fallback). Namun:
+- ❌ Gambar tidak sinkron antar device
+- ❌ Batas ukuran localStorage (5-10MB)
+- ✅ Tetap berfungsi normal di satu device
 
 ## 📝 Catatan Penting
 
