@@ -2,16 +2,16 @@ class CashierSystem {
     constructor() {
         this.cart = [];
         this.products = [
-            { id: 1, name: 'Ayam Bakar', price: 15000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 50 },
-            { id: 2, name: 'Air Mineral', price: 5000, category: 'Cafe', image: 'https://via.placeholder.com/100', stock: 100 },
-            { id: 3, name: 'Avocado Juice', price: 25000, category: 'Cafe', image: 'https://via.placeholder.com/100', stock: 30 },
-            { id: 4, name: 'Ayam Goreng Bumbu', price: 15000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 45 },
-            { id: 5, name: 'Bakso Ikan Tusuk', price: 3000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 80 },
-            { id: 6, name: 'Nasi Goreng', price: 20000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 35 },
-            { id: 7, name: 'Es Teh Manis', price: 8000, category: 'Cafe', image: 'https://via.placeholder.com/100', stock: 60 },
-            { id: 8, name: 'Mie Ayam', price: 18000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 40 },
-            { id: 9, name: 'Kopi Hitam', price: 10000, category: 'Cafe', image: 'https://via.placeholder.com/100', stock: 70 },
-            { id: 10, name: 'Sate Ayam', price: 25000, category: 'Resto', image: 'https://via.placeholder.com/100', stock: 25 }
+            { id: 1, name: 'Ayam Bakar', price: 15000, category: 'Resto', image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=200&h=200&fit=crop', stock: 50 },
+            { id: 2, name: 'Air Mineral', price: 5000, category: 'Cafe', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200&h=200&fit=crop', stock: 100 },
+            { id: 3, name: 'Avocado Juice', price: 25000, category: 'Cafe', image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=200&h=200&fit=crop', stock: 30 },
+            { id: 4, name: 'Ayam Goreng Bumbu', price: 15000, category: 'Resto', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200&h=200&fit=crop', stock: 45 },
+            { id: 5, name: 'Bakso Ikan Tusuk', price: 3000, category: 'Resto', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop', stock: 80 },
+            { id: 6, name: 'Nasi Goreng', price: 20000, category: 'Resto', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200&h=200&fit=crop', stock: 35 },
+            { id: 7, name: 'Es Teh Manis', price: 8000, category: 'Cafe', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop', stock: 60 },
+            { id: 8, name: 'Mie Ayam', price: 18000, category: 'Resto', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop', stock: 40 },
+            { id: 9, name: 'Kopi Hitam', price: 10000, category: 'Cafe', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop', stock: 70 },
+            { id: 10, name: 'Sate Ayam', price: 25000, category: 'Resto', image: 'https://images.unsplash.com/photo-1529563021893-cc83c992d75d?w=200&h=200&fit=crop', stock: 25 }
         ];
         this.customers = [
             { id: 1, name: 'Walk-in Customer', phone: '-', type: 'regular' },
@@ -1433,6 +1433,35 @@ class CashierSystem {
         }
     }
 
+    migrateProductImages() {
+        const placeholderUrl = 'https://via.placeholder.com/100';
+        const unsplashImages = [
+            'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1529563021893-cc83c992d75d?w=200&h=200&fit=crop'
+        ];
+        
+        let migrated = false;
+        this.products.forEach((product, index) => {
+            if (product.image === placeholderUrl || product.image.includes('via.placeholder.com')) {
+                // Gunakan gambar Unsplash berdasarkan index
+                product.image = unsplashImages[index % unsplashImages.length];
+                migrated = true;
+            }
+        });
+        
+        if (migrated) {
+            this.saveToLocalStorage();
+        }
+    }
+
     loadFromLocalStorage() {
         const savedCart = localStorage.getItem('cashier_cart');
         const savedProducts = localStorage.getItem('cashier_products');
@@ -1446,6 +1475,8 @@ class CashierSystem {
 
         if (savedProducts) {
             this.products = JSON.parse(savedProducts);
+            // Migrasi gambar placeholder ke Unsplash
+            this.migrateProductImages();
             this.renderProducts();
         }
 
