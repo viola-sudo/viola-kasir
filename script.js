@@ -1139,6 +1139,76 @@ class CashierSystem {
         document.body.appendChild(modal);
     }
 
+    editCustomer(customerId) {
+        const customer = this.customers.find(c => c.id === customerId);
+        if (!customer) return;
+
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Edit Pelanggan</h3>
+                <input type="text" id="edit-customer-name" value="${customer.name}" placeholder="Nama Pelanggan">
+                <input type="text" id="edit-customer-phone" value="${customer.phone}" placeholder="Nomor Telepon">
+                <select id="edit-customer-type">
+                    <option value="regular" ${customer.type === 'regular' ? 'selected' : ''}>Regular</option>
+                    <option value="member" ${customer.type === 'member' ? 'selected' : ''}>Member</option>
+                    <option value="vip" ${customer.type === 'vip' ? 'selected' : ''}>VIP</option>
+                </select>
+                <div class="modal-buttons">
+                    <button onclick="cashier.saveCustomerEdit(${customerId})">Simpan</button>
+                    <button onclick="this.closest('.modal').remove()">Batal</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    saveCustomerEdit(customerId) {
+        const customer = this.customers.find(c => c.id === customerId);
+        if (!customer) return;
+
+        const name = document.getElementById('edit-customer-name').value;
+        const phone = document.getElementById('edit-customer-phone').value;
+        const type = document.getElementById('edit-customer-type').value;
+
+        if (!name || !phone) {
+            alert('Mohon lengkapi semua field');
+            return;
+        }
+
+        customer.name = name;
+        customer.phone = phone;
+        customer.type = type;
+
+        this.saveToLocalStorage();
+        document.querySelectorAll('.modal').forEach(modal => modal.remove());
+        
+        // Refresh customer modal
+        this.showCustomers();
+    }
+
+    deleteCustomer(customerId) {
+        const customer = this.customers.find(c => c.id === customerId);
+        if (!customer) return;
+
+        if (customer.name === 'Walk-in Customer') {
+            alert('Walk-in Customer tidak dapat dihapus');
+            return;
+        }
+
+        if (!confirm(`Apakah Anda yakin ingin menghapus pelanggan ${customer.name}?`)) {
+            return;
+        }
+
+        this.customers = this.customers.filter(c => c.id !== customerId);
+        this.saveToLocalStorage();
+        
+        // Refresh customer modal
+        document.querySelectorAll('.modal').forEach(modal => modal.remove());
+        this.showCustomers();
+    }
+
     printReceipt() {
         if (this.cart.length === 0) {
             alert('Keranjang masih kosong');
