@@ -1165,51 +1165,131 @@ class CashierSystem {
                 <head>
                     <title>Struk Pembayaran</title>
                     <style>
-                        body { font-family: monospace; padding: 20px; }
-                        .receipt { max-width: 300px; margin: 0 auto; }
-                        .header { text-align: center; margin-bottom: 20px; }
-                        .items { margin: 20px 0; }
-                        .item { display: flex; justify-content: space-between; margin: 5px 0; }
-                        .total { border-top: 1px dashed #000; padding-top: 10px; margin-top: 10px; }
-                        @media print { body { padding: 0; } }
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { 
+                            font-family: 'Courier New', monospace; 
+                            font-size: 12px; 
+                            padding: 5px;
+                            width: 80mm;
+                            background: white;
+                        }
+                        .receipt { 
+                            width: 100%; 
+                            max-width: 80mm;
+                            margin: 0 auto;
+                        }
+                        .header { 
+                            text-align: center; 
+                            margin-bottom: 10px; 
+                            border-bottom: 1px dashed #000;
+                            padding-bottom: 10px;
+                        }
+                        .header h1 { 
+                            font-size: 16px; 
+                            font-weight: bold; 
+                            margin-bottom: 5px;
+                        }
+                        .header p { 
+                            font-size: 10px; 
+                            margin: 2px 0;
+                        }
+                        .items { 
+                            margin: 10px 0; 
+                        }
+                        .item { 
+                            display: flex; 
+                            justify-content: space-between; 
+                            margin: 3px 0;
+                            font-size: 11px;
+                        }
+                        .item-name { 
+                            flex: 1; 
+                            white-space: nowrap; 
+                            overflow: hidden; 
+                            text-overflow: ellipsis;
+                        }
+                        .item-qty { 
+                            margin-right: 5px;
+                        }
+                        .item-price { 
+                            text-align: right;
+                            min-width: 60px;
+                        }
+                        .total { 
+                            border-top: 1px dashed #000; 
+                            padding-top: 8px; 
+                            margin-top: 10px;
+                        }
+                        .total-row { 
+                            display: flex; 
+                            justify-content: space-between; 
+                            margin: 3px 0;
+                            font-size: 11px;
+                        }
+                        .grand-total { 
+                            font-weight: bold; 
+                            font-size: 14px;
+                            margin-top: 5px;
+                            border-top: 1px solid #000;
+                            padding-top: 5px;
+                        }
+                        .footer { 
+                            text-align: center; 
+                            margin-top: 15px;
+                            border-top: 1px dashed #000;
+                            padding-top: 10px;
+                        }
+                        .footer p { 
+                            font-size: 10px; 
+                            margin: 2px 0;
+                        }
+                        @media print {
+                            body { padding: 0; width: 80mm; }
+                            .receipt { width: 80mm; }
+                        }
+                        @page {
+                            size: 80mm auto;
+                            margin: 0;
+                        }
                     </style>
                 </head>
                 <body>
                     <div class="receipt">
                         <div class="header">
-                            <h2>VIOLA KASIR</h2>
+                            <h1>VIOLA KASIR</h1>
                             <p>${new Date().toLocaleString('id-ID')}</p>
                             <p>Pelanggan: ${this.currentCustomer ? this.currentCustomer.name : 'Walk-in'}</p>
                         </div>
                         <div class="items">
                             ${this.cart.map(item => `
                                 <div class="item">
-                                    <span>${item.name} (${item.quantity}x)</span>
-                                    <span>${this.formatCurrency(item.price * item.quantity)}</span>
+                                    <span class="item-name">${item.name}</span>
+                                    <span class="item-qty">${item.quantity}x</span>
+                                    <span class="item-price">${this.formatCurrency(item.price * item.quantity)}</span>
                                 </div>
                             `).join('')}
                         </div>
                         <div class="total">
-                            <div class="item">
-                                <span>Subtotal:</span>
+                            <div class="total-row">
+                                <span>Subtotal</span>
                                 <span>${this.formatCurrency(subtotal)}</span>
                             </div>
                             ${discount > 0 ? `
-                                <div class="item">
-                                    <span>Diskon:</span>
+                                <div class="total-row">
+                                    <span>Diskon (${this.currentDiscount.name})</span>
                                     <span>-${this.formatCurrency(discount)}</span>
                                 </div>
                             ` : ''}
-                            <div class="item">
-                                <span>PPN 10%:</span>
+                            <div class="total-row">
+                                <span>PPN 10%</span>
                                 <span>${this.formatCurrency(tax)}</span>
                             </div>
-                            <div class="item" style="font-weight: bold;">
-                                <span>TOTAL:</span>
+                            <div class="total-row grand-total">
+                                <span>TOTAL</span>
                                 <span>${this.formatCurrency(total)}</span>
                             </div>
                         </div>
-                        <div style="text-align: center; margin-top: 30px;">
+                        <div class="footer">
                             <p>Terima Kasih</p>
                             <p>Selamat Berbelanja Kembali</p>
                         </div>
