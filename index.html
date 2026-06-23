@@ -69,12 +69,12 @@
                 <button onclick="cashier.clearSearch()">Clear</button>
             </div>
             <div class="top-nav">
-                <span class="active">Products</span>
-                <span>Menu Management</span>
-                <span>Reports</span>
-                <span>Barcode</span>
-                <span>Custom</span>
-                <span>Customers</span>
+                <span class="active" onclick="cashier.switchView('Products')">Products</span>
+                <span onclick="cashier.switchView('Menu Management')">Menu Management</span>
+                <span onclick="cashier.switchView('Reports')">Reports</span>
+                <span onclick="cashier.switchView('Barcode')">Barcode</span>
+                <span onclick="cashier.switchView('Custom')">Custom</span>
+                <span onclick="cashier.switchView('Customers')">Customers</span>
             </div>
 
             <div class="product-grid">
@@ -103,6 +103,10 @@
             </div>
         </div>
     </div>
+
+    <footer class="app-footer">
+        <p>&copy; 2024 Viola Kasir. All Rights Reserved.</p>
+    </footer>
 
 </body>
 </html>
