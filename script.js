@@ -31,6 +31,13 @@ class CashierSystem {
         this.taxRate = 0.1;
         this.searchTerm = '';
         
+        // Cloudinary Configuration
+        this.cloudinaryConfig = {
+            cloudName: 'dx4e3bdic',
+            uploadPreset: 'viola-kasir',
+            apiKey: '913871217173658'
+        };
+        
         this.init();
     }
 
@@ -246,7 +253,35 @@ class CashierSystem {
         document.body.appendChild(modal);
     }
 
-    addNewProduct() {
+    async uploadToCloudinary(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', this.cloudinaryConfig.uploadPreset);
+        
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${this.cloudinaryConfig.cloudName}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            );
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+            
+            return data.secure_url;
+        } catch (error) {
+            console.error('Cloudinary upload error:', error);
+            alert('Gagal upload gambar ke cloud. Menggunakan fallback.');
+            return null;
+        }
+    }
+
+    async addNewProduct() {
         const name = document.getElementById('new-product-name').value;
         const price = parseInt(document.getElementById('new-product-price').value);
         const stock = parseInt(document.getElementById('new-product-stock').value) || 0;
@@ -261,12 +296,38 @@ class CashierSystem {
         let imageUrl = 'https://via.placeholder.com/100';
         
         if (imageInput.files && imageInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imageUrl = e.target.result;
+            // Cek apakah Cloudinary sudah dikonfigurasi
+            if (this.cloudinaryConfig.cloudName === 'YOUR_CLOUD_NAME') {
+                // Fallback ke base64 jika Cloudinary belum dikonfigurasi
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageUrl = e.target.result;
+                    this.saveProduct(name, price, stock, category, imageUrl);
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                // Upload ke Cloudinary
+                const uploadBtn = document.querySelector('.modal-buttons button:first-child');
+                uploadBtn.textContent = 'Uploading...';
+                uploadBtn.disabled = true;
+                
+                const cloudUrl = await this.uploadToCloudinary(imageInput.files[0]);
+                
+                if (cloudUrl) {
+                    imageUrl = cloudUrl;
+                } else {
+                    // Fallback ke base64 jika gagal
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imageUrl = e.target.result;
+                        this.saveProduct(name, price, stock, category, imageUrl);
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                    return;
+                }
+                
                 this.saveProduct(name, price, stock, category, imageUrl);
-            };
-            reader.readAsDataURL(imageInput.files[0]);
+            }
         } else {
             this.saveProduct(name, price, stock, category, imageUrl);
         }
@@ -400,7 +461,7 @@ class CashierSystem {
         document.body.appendChild(modal);
     }
 
-    updateProduct(productId) {
+    async updateProduct(productId) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
 
@@ -421,12 +482,36 @@ class CashierSystem {
         product.category = category;
 
         if (imageInput.files && imageInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                product.image = e.target.result;
+            if (this.cloudinaryConfig.cloudName === 'YOUR_CLOUD_NAME') {
+                // Fallback ke base64
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    product.image = e.target.result;
+                    this.finishProductUpdate();
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                // Upload ke Cloudinary
+                const uploadBtn = document.querySelector('.modal-buttons button:first-child');
+                uploadBtn.textContent = 'Uploading...';
+                uploadBtn.disabled = true;
+                
+                const cloudUrl = await this.uploadToCloudinary(imageInput.files[0]);
+                
+                if (cloudUrl) {
+                    product.image = cloudUrl;
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        product.image = e.target.result;
+                        this.finishProductUpdate();
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                    return;
+                }
+                
                 this.finishProductUpdate();
-            };
-            reader.readAsDataURL(imageInput.files[0]);
+            }
         } else {
             this.finishProductUpdate();
         }
@@ -463,19 +548,45 @@ class CashierSystem {
         document.body.appendChild(modal);
     }
 
-    saveProductImage(productId) {
+    async saveProductImage(productId) {
         const product = this.products.find(p => p.id === productId);
         const imageInput = document.getElementById('change-product-image');
 
         if (imageInput.files && imageInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                product.image = e.target.result;
-                this.renderProducts();
-                document.querySelectorAll('.modal').forEach(modal => modal.remove());
-                this.saveToLocalStorage();
-            };
-            reader.readAsDataURL(imageInput.files[0]);
+            if (this.cloudinaryConfig.cloudName === 'YOUR_CLOUD_NAME') {
+                // Fallback ke base64
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    product.image = e.target.result;
+                    this.renderProducts();
+                    document.querySelectorAll('.modal').forEach(modal => modal.remove());
+                    this.saveToLocalStorage();
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                // Upload ke Cloudinary
+                const uploadBtn = document.querySelector('.modal-buttons button:first-child');
+                uploadBtn.textContent = 'Uploading...';
+                uploadBtn.disabled = true;
+                
+                const cloudUrl = await this.uploadToCloudinary(imageInput.files[0]);
+                
+                if (cloudUrl) {
+                    product.image = cloudUrl;
+                    this.renderProducts();
+                    document.querySelectorAll('.modal').forEach(modal => modal.remove());
+                    this.saveToLocalStorage();
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        product.image = e.target.result;
+                        this.renderProducts();
+                        document.querySelectorAll('.modal').forEach(modal => modal.remove());
+                        this.saveToLocalStorage();
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                }
+            }
         } else {
             alert('Mohon pilih gambar baru');
         }
